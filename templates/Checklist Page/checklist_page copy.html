@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Split Layout with Scrollable Checklist</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* '뒤로 가기' 버튼 스타일 */
+      .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: calc(12.5%); /* carrier.png 이미지 크기의 1/8 */
+        max-width: 60px; /* 최대 크기 제한 */
+        border: 4px solid #dee2e6; /* 체크리스트와 동일한 테두리 색 */
+        border-radius: 8px; /* 체크리스트와 동일한 radius */
+        padding: 4px; /* 내부 여백 */
+        background-color: #f8f9fa; /* 체크리스트 배경 색 */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 */
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .back-button:hover {
+        transform: scale(1.1); /* 버튼 확대 효과 */
+      }
+
+      .back-button img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 4px; /* 내부 이미지 둥근 모서리 */
+      }
+
+      /* 이미지 스타일 */
+      .image-container img {
+        max-width: 80%; /* 현재 크기의 80%로 조정 */
+        height: auto;
+        border-radius: 8px;
+        transition: max-width 0.3s ease; /* 크기 전환 효과 */
+      }
+
+      /* 체크리스트 컨테이너 스타일 */
+      .checklist-container {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        overflow-y: scroll; /* 스크롤 가능 */
+      }
+
+      /* 스크롤바 스타일 */
+      .checklist-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .checklist-container::-webkit-scrollbar-thumb {
+        background-color: #adb5bd;
+        border-radius: 4px;
+      }
+
+      .checklist-container::-webkit-scrollbar-thumb:hover {
+        background-color: #868e96;
+      }
+
+      .checklist-item {
+        margin-bottom: 15px;
+      }
+
+      /* 버튼 스타일 */
+      .travel-button {
+        margin-top: 20px; /* carrier.png와 체크리스트 아래 간격 */
+        width: 100%; /* 버튼 가로 폭 */
+        max-width: 300px; /* 최대 너비 제한 */
+        background-color: #dee2e6; /* 초기 버튼 색상 */
+        color: black; /* 초기 텍스트 색상 */
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: not-allowed; /* 비활성화된 상태에서는 클릭 불가 */
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .travel-button.enabled {
+        background-color: #007bff; /* 파란색 */
+        color: white;
+        cursor: pointer;
+      }
+
+      /* 전체 레이아웃 스타일 */
+      .split-container {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative; /* '뒤로 가기' 버튼 위치 설정 */
+        flex-direction: column; /* 버튼을 아래로 배치 */
+        gap: 20px; /* 상단 요소와 하단 버튼 간격 */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container split-container">
+      <!-- '뒤로 가기' 버튼 -->
+      <a href="#" class="back-button">
+        <img src="back.png" alt="Back" />
+      </a>
+
+      <div class="row w-100">
+        <!-- 왼쪽 이미지 섹션 -->
+        <div class="col-md-6 d-flex justify-content-center align-items-center image-container">
+          <img id="carrier-image" src="carrier.png" alt="Suitcase Icon" />
+        </div>
+        <!-- 오른쪽 체크리스트 섹션 -->
+        <div class="col-md-6">
+          <div id="checklist-container" class="checklist-container">
+            <h3 class="text-center">Checklist</h3>
+            <div id="checklist"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- '여행 가기' 버튼 -->
+      <button id="travel-button" class="travel-button">
+        여행 가기
+      </button>
+    </div>
+
+    <!-- JavaScript to dynamically generate checklist -->
+    <script>
+      // 데이터베이스에서 가져온 체크리스트 값 예시
+      const checklistData = [
+        { id: 1, text: "Checklist Item 1", completed: false },
+        { id: 2, text: "Checklist Item 2", completed: true },
+        { id: 3, text: "Checklist Item 3", completed: true },
+        { id: 4, text: "Checklist Item 4", completed: true },
+        { id: 5, text: "Checklist Item 5", completed: true },
+        { id: 6, text: "Checklist Item 6", completed: true },
+        { id: 7, text: "Checklist Item 7", completed: true },
+        { id: 8, text: "Checklist Item 8", completed: true },
+        { id: 9, text: "Checklist Item 9", completed: true },
+        { id: 10, text: "Checklist Item 10", completed: true },
+      ];
+
+      // 체크리스트 컨테이너
+      const checklistContainer = document.getElementById("checklist");
+      const travelButton = document.getElementById("travel-button");
+
+      // 데이터 기반으로 체크리스트 생성
+      checklistData.forEach((item) => {
+        const checklistItem = document.createElement("div");
+        checklistItem.className = "form-check checklist-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "form-check-input";
+        checkbox.id = `checklist-${item.id}`;
+        checkbox.checked = item.completed;
+
+        const label = document.createElement("label");
+        label.className = "form-check-label";
+        label.htmlFor = `checklist-${item.id}`;
+        label.innerText = item.text;
+
+        checklistItem.appendChild(checkbox);
+        checklistItem.appendChild(label);
+
+        checklistContainer.appendChild(checklistItem);
+
+        // 체크박스 변경 이벤트
+        checkbox.addEventListener("change", updateButtonState);
+      });
+
+      // 체크리스트 상태 확인 및 버튼 활성화
+      function updateButtonState() {
+        const allChecked = Array.from(
+          document.querySelectorAll(".form-check-input")
+        ).every((checkbox) => checkbox.checked);
+
+        if (allChecked) {
+          travelButton.classList.add("enabled");
+          travelButton.removeAttribute("disabled");
+        } else {
+          travelButton.classList.remove("enabled");
+          travelButton.setAttribute("disabled", "true");
+        }
+      }
+
+      // carrier.png의 높이를 체크리스트 컨테이너에 반영
+      const carrierImage = document.getElementById("carrier-image");
+      const checklistBox = document.getElementById("checklist-container");
+
+      carrierImage.onload = () => {
+        const carrierHeight = carrierImage.offsetHeight * 0.8; // 높이를 80%로 조정
+        checklistBox.style.height = `${carrierHeight}px`;
+      };
+
+      // '여행 가기' 버튼 클릭 시 색상 및 텍스트 변경
+      travelButton.addEventListener("click", () => {
+        if (travelButton.classList.contains("enabled")) {
+          travelButton.style.backgroundColor = "green";
+          travelButton.innerText = "출발 준비 완료!";
+        }
+      });
+
+      // 초기 버튼 상태 업데이트
+      updateButtonState();
+    </script>
+  </body>
+</html>
