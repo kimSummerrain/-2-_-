@@ -56,7 +56,7 @@ def initialize_database():
         ('Norway', 'Oslo', '노르웨이', '오슬로'),
         ('Norway', 'Bergen', '노르웨이', '베르겐'),
         ('Vietnam', 'Hanoi', '베트남', '하노이'),
-        ('Vietnam', 'Ho Chi Minh City', '베트남', '호찌민시'),
+        ('Vietnam', 'Ho Chi Minh City', '베트남', '호찌민'),
         ('South Korea', 'Seoul', '한국', '서울'),
         ('South Korea', 'Busan', '한국', '부산'),
         ('China', 'Beijing', '중국', '베이징'),
@@ -65,6 +65,48 @@ def initialize_database():
         ('Mongolia', 'Darkhan', '몽골', '다르항'),
         ('Switzerland', 'Zurich', '스위스', '취리히'),
         ('Switzerland', 'Geneva', '스위스', '제네바')
+    ])
+
+    # basic_item 테이블 생성 (기본 준비물 항목 저장)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS basic_item (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_name TEXT NOT NULL
+    )
+    ''')
+
+    # 기본 준비물 항목 삽입
+    cursor.executemany('''
+    INSERT OR IGNORE INTO basic_item (item_name)
+    VALUES (?)
+    ''', [
+        ('여권 및 비자',),
+        ('항공권 및 숙소 예약 확인서',),
+        ('여행자 보험',),
+        ('현금 및 카드',),
+        ('전자기기 및 관련용품',),
+        ('현지 심카드',),
+        ('상비약',),
+        ('개인 위생 용품',)
+    ])
+
+    # cloth 테이블 생성 (옷 종류, 성분별로 나누기)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS cloth (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        item_name TEXT NOT NULL
+    )
+    ''')
+
+    # cold, average, hot 성분에 해당하는 옷 종류 삽입
+    cursor.executemany('''
+    INSERT OR IGNORE INTO cloth (category, item_name)
+    VALUES (?, ?)
+    ''', [
+        ('cold', '따뜻한 옷'),
+        ('average', '일반옷'),
+        ('hot', '반팔옷')
     ])
 
     # 변경사항 저장 및 연결 종료

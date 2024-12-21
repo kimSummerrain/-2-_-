@@ -1,12 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Example</title>
+    <title>여행 준비 및 날씨 정보</title>
+    <!-- CSS 파일 경로 수정 -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script>
+        function updateCities() {
+            const country = document.getElementById('country-select').value;
+            const citySelect = document.getElementById('city-select');
+
+            if (country) {
+                fetch(`/get_cities?country=${encodeURIComponent(country)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        citySelect.innerHTML = '<option selected>도시 선택</option>';
+                        data.cities.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.city_name_kr;
+                            option.textContent = city.city_name_kr;
+                            citySelect.appendChild(option);
+                        });
+                        citySelect.disabled = false;
+                    })
+                    .catch(error => console.error('Error fetching cities:', error));
+            } else {
+                citySelect.innerHTML = '<option selected>도시 선택</option>';
+                citySelect.disabled = true;
+            }
+        }
+
+        function fetchWeather() {
+            const country = document.getElementById('country-select').value;
+            const city = document.getElementById('city-select').value;
+
+            if (country && city) {
+                fetch(`/get_weather?country=${encodeURIComponent(country)}&city=${encodeURIComponent(city)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const weatherData = document.getElementById('weather-data');
+                        if (data.error) {
+                            weatherData.textContent = data.error;
+                        } else {
+                            weatherData.innerHTML = `
+                                <strong>${city}</strong>의 날씨:<br>
+                                ${data.weather.description}<br>
+                                온도: ${data.weather.temp}&#8451;
+                            `;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching weather:', error));
+            } else {
+                alert('국가와 도시를 모두 선택해주세요.');
+            }
+        }
+        function packAndNavigate() {
+    const country = document.getElementById('country-select').value;
+    const city = document.getElementById('city-select').value;
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const gender = document.getElementById('gender-select').value;
+
+    if (country && city && startDate && endDate) {
+        const url = `/weather.html?country=${encodeURIComponent(country)}&city=${encodeURIComponent(city)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}&gender=${encodeURIComponent(gender)}`;
+        window.location.href = url;
+    } else {
+        alert('모든 필드를 올바르게 입력해주세요.');
+    }
+}
+    </script>
 </head>
 <body>
-    <h1>Welcome to My Flask App!</h1>
-    <p>This is a simple Flask example with HTML rendering.</p>
+    <div class="container">
+        <h3 class="mb-4 text-center">여행 준비 및 날씨 정보</h3>
+
+        <!-- 나라 선택 -->
+        <div class="form-group">
+            <label for="country-select">나라 선택</label>
+            <select id="country-select" class="form-select" onchange="updateCities()" required>
+                {% for country in countries %}
+                    <option value="{{ country['country_name_kr'] }}"
+                            {% if selected_country == country['country_name_kr'] %} selected {% endif %}>
+                        {{ country['country_name_kr'] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 도시 선택 -->
+        <div class="form-group">
+            <label for="city-select">도시 선택</label>
+            <select id="city-select" class="form-select" required>
+                {% if selected_country %}
+                    {% for city in cities %}
+                        <option value="{{ city['city_name_kr'] }}"
+                                {% if selected_city == city['city_name_kr'] %} selected {% endif %}>
+                            {{ city['city_name_kr'] }}
+                        </option>
+                    {% endfor %}
+                {% else %}
+                    <option selected>도시 선택</option>
+                {% endif %}
+            </select>
+        </div>
+
+        <!-- 날짜 선택 -->
+        <div class="form-group">
+            <label>날짜 선택</label>
+            <input id="start-date" type="date" class="form-select">
+            <span>~</span>
+            <input id="end-date" type="date" class="form-select">
+        </div>
+
+        <!-- 성별 선택 -->
+        <div class="form-group">
+            <label for="gender-select">성별 선택</label>
+            <select id="gender-select" class="form-select">
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+                <option selected value="other">기타</option>
+            </select>
+        </div>
+
+     <!-- 버튼 -->
+<div class="text-center mt-4">
+    <button class="btn btn-primary px-4" onclick="packAndNavigate()">짐 싸기</button>
+</div>
+
+        <!-- 날씨 정보 표시 -->
+        <div id="weather-info" class="mt-4">
+            <h4>날씨 정보</h4>
+            <p id="weather-data">날씨 정보를 확인하려면 국가와 도시를 선택하세요.</p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

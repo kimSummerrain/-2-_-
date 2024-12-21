@@ -1,0 +1,107 @@
+/* 전체 컨테이너 */
+.container {
+    width: 50%;
+    margin: auto;
+    margin-top: 50px;
+    background: #e0e5ec;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
+}
+body {
+    font-family: 'Jua', sans-serif;
+}
+
+/* 제목 스타일 */
+h3 {
+    font-size: 25px;
+
+    font-weight: bold;
+    color: #333;
+    text-shadow: 1px 1px 2px #ffffff;
+    text-align: center; /* 제목을 가운데 정렬 */
+}
+
+/* 드롭다운 기본 스타일 */
+.form-select {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #005f73;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    appearance: none; /* 브라우저 기본 화살표 제거 */
+    display: inline-block;
+    width: auto;
+    min-width: 150px;
+    font-family: 'Jua', sans-serif; /* 폰트 추가 */
+}
+
+/* 드롭다운 클릭 시 스타일 */
+.form-select:focus {
+    box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+    background: #f0f0f0;
+}
+
+/* 드롭다운 텍스트 옆에 배치 */
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    margin-right: 10px;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    color: #005f73;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #e0e5ec;
+    box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
+    transition: all 0.3s ease;
+    font-family: 'Jua', sans-serif; /* 폰트 추가 */
+
+    display: block; /* 버튼을 블록 요소로 설정 */
+    margin: 20px auto; /* 자동으로 수평 가운데 정렬 및 위아래 여백 */
+}
+
+.btn-primary:hover {
+    background: #e0e5ec;
+    box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+    color: #023047;
+}
+
+.btn-primary:active {
+    box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-group label {
+        margin-bottom: 5px;
+    }
+}

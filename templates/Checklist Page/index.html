@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walking Animation</title>
+    <style>
+        /* 전체 페이지 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; /* 기본 여백 제거 */
+            padding: 0; /* 기본 패딩 제거 */
+            display: flex; /* 중앙 정렬을 위한 Flexbox 설정 */
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            height: 150vh; /* 페이지 높이를 화면 높이의 1.5배로 설정 */
+            background-color: #f0f0f0; /* 페이지 배경색 설정 */
+        }
+
+        /* 걷는 애니메이션을 담을 컨테이너 */
+        .walking-container {
+            position: relative; /* 내부 요소의 위치를 제어하기 위해 상대 위치 설정 */
+            width: 300px; /* 컨테이너의 폭 */
+            height: 300px; /* 컨테이너의 높이 */
+            overflow: hidden; /* 내부 콘텐츠가 컨테이너를 벗어나지 않도록 숨김 */
+        }
+
+        /* 걷는 애니메이션을 위한 요소 */
+        .walking-animation {
+            position: absolute; /* 위치를 자유롭게 제어하기 위한 절대 위치 설정 */
+            width: 300px; /* 걷는 이미지(스프라이트 시트)의 한 프레임 크기와 동일 */
+            height: 300px; /* 걷는 이미지(스프라이트 시트)의 한 프레임 높이와 동일 */
+            background: url('walking_scene_1.png') no-repeat; /* 초기 배경 이미지 설정 */
+            animation: walk-cycle 0.00000000000001s steps(5) infinite; 
+            /* 걷는 애니메이션 설정:
+               - 지속 시간: 사실상 0초로 설정 (steps 단계는 효과 없음)
+               - steps(5): 5단계 애니메이션 (미사용 상태)
+               - 무한 반복 */
+        }
+
+        /* 걷는 애니메이션 키프레임 (현재 사용되지 않음) */
+        @keyframes walk-cycle {
+            100% {
+                transform: translateX(-1500px); /* 스프라이트 시트의 전체 프레임 이동 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 걷는 애니메이션을 포함하는 컨테이너 -->
+    <div class="walking-container">
+        <div id="walkingAnimation" class="walking-animation"></div>
+    </div>
+
+    <script>
+        // 걷는 애니메이션을 위한 이미지 파일 경로 배열
+        const images = [
+            'walking_scene_1.png', // 첫 번째 걷는 이미지
+            'walking_scene_2.png', // 두 번째 걷는 이미지
+            'walking_scene_3.png'  // 세 번째 걷는 이미지
+        ];
+
+        let currentIndex = 0; // 현재 표시 중인 이미지의 인덱스
+        const animationElement = document.getElementById("walkingAnimation"); // 애니메이션 요소 선택
+
+        // 배경 이미지를 주기적으로 변경하는 함수
+        function changeBackgroundImage() {
+            currentIndex = (currentIndex + 1) % images.length; 
+            /* currentIndex를 0, 1, 2로 순환하도록 설정
+               - 현재 인덱스에 1을 더한 후 배열 길이로 나머지 연산 수행 */
+            animationElement.style.backgroundImage = `url('${images[currentIndex]}')`;
+            /* 다음 이미지로 배경을 변경 */
+        }
+
+        // 일정한 간격(0.5초)으로 배경 이미지를 변경
+        setInterval(changeBackgroundImage, 500);
+        /* 500ms(0.5초)마다 changeBackgroundImage 함수를 호출 */
+    </script>
+</body>
+</html>
