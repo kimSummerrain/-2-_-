@@ -1,6 +1,2 @@
 Flask==2.2.2
 gunicorn==20.1.0
-<<<<<<< HEAD
-requests==2.28.1
-=======
->>>>>>> a9d03c1dd33af70bb761167d5db556730cf17cdb
